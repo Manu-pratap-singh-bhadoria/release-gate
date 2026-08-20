@@ -1,4 +1,4 @@
-```yaml
+
 name: TDS GA7 Release Gate
 
 on:
@@ -89,4 +89,4 @@ jobs:
               process.exit(1);
             });
           NODE
-```
+
