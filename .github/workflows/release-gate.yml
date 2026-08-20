@@ -26,7 +26,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: TDS identity: 24f2006760@ds.study.iitm.ac.in
+      - name: "TDS identity: 24f2006760@ds.study.iitm.ac.in"
         run: echo "TDS identity: 24f2006760@ds.study.iitm.ac.in"
 
       - name: Test release gate
