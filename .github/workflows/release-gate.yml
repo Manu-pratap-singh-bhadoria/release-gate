@@ -1,3 +1,4 @@
+```yaml
 name: TDS GA7 Release Gate
 
 on:
@@ -27,11 +28,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: "TDS identity: 24f2006760@ds.study.iitm.ac.in"
-        run: echo "TDS identity: 24f2006760@ds.study.iitm.ac.in"
+        run: 'echo "TDS identity: 24f2006760@ds.study.iitm.ac.in"'
 
       - name: Test release gate
         env:
-          RELEASE_GATE_URL: https://release-gate.release-gate-bhadoria.workers.dev/release-gate
+          RELEASE_GATE_URL: "https://release-gate.release-gate-bhadoria.workers.dev/release-gate"
         run: |
           node <<'NODE'
           const url = process.env.RELEASE_GATE_URL;
@@ -88,3 +89,4 @@ jobs:
               process.exit(1);
             });
           NODE
+```
