@@ -1,0 +1,90 @@
+name: TDS GA7 Release Gate
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  packages: write
+  id-token: none
+
+jobs:
+  release-gate:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        test:
+          - policy
+          - security
+          - production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: TDS identity: 24f2006760@ds.study.iitm.ac.in
+        run: echo "TDS identity: 24f2006760@ds.study.iitm.ac.in"
+
+      - name: Test release gate
+        env:
+          RELEASE_GATE_URL: https://release-gate.release-gate-bhadoria.workers.dev/release-gate
+        run: |
+          node <<'NODE'
+          const url = process.env.RELEASE_GATE_URL;
+
+          const payload = {
+            target: "preview",
+            event: "pull_request",
+            ref: "refs/heads/feature/test",
+            workflow: {
+              trigger: "pull_request",
+              permissions: {
+                contents: "read",
+                packages: "write",
+                "id-token": "none"
+              },
+              testsPassed: true,
+              matrixComplete: true,
+              failFast: false,
+              actions: [
+                {
+                  owner: "actions",
+                  name: "checkout",
+                  ref: "v4"
+                }
+              ]
+            },
+            image: {
+              multiStage: true,
+              runsAsRoot: false,
+              secretMode: "none",
+              criticalVulnerabilities: 0,
+              digestPinned: true
+            }
+          };
+
+          fetch(url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+          })
+            .then(async response => {
+              const data = await response.json();
+
+              console.log(JSON.stringify(data, null, 2));
+
+              if (data.decision !== "promote") {
+                process.exit(1);
+              }
+            })
+            .catch(error => {
+              console.error(error);
+              process.exit(1);
+            });
+          NODE
